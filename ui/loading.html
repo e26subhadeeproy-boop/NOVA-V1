@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#080b14">
+    <title>NOVA is waking up</title>
+    <link rel="stylesheet" href="/loading.css">
+    <script src="/avatar-renderer.js" defer></script>
+    <script src="/loading.js" defer></script>
+  </head>
+  <body>
+    <main class="loading-shell">
+      <div class="starfield" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <header class="loading-brand"><span class="brand-orbit"><b></b></span><span>NOVA <small>LOCAL AI COMPANION</small></span></header>
+      <section class="wake-stage" aria-label="NOVA loading animation">
+        <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
+        <span class="orbit-star star-a">✦</span><span class="orbit-star star-b">✧</span><span class="orbit-star star-c">✦</span>
+        <span class="floating-sprite sprite-one"><i class="mini-face"></i></span>
+        <span class="floating-sprite sprite-two"><i class="mini-face"></i></span>
+        <span class="floating-sprite sprite-three"><i class="mini-face"></i></span>
+        <div class="loading-robot" id="loadingAvatar" data-state="idle" role="img" aria-label="NOVA the friendly robot">
+          <div class="avatar-art"></div>
+          <span class="robot-spark spark-a">✦</span><span class="robot-spark spark-b">✧</span>
+        </div>
+        <div class="floor-glow"></div>
+      </section>
+      <section class="loading-copy">
+        <p class="eyebrow">A LITTLE MOMENT, SIR</p>
+        <h1>NOVA is waking up<span class="ellipsis"><i>.</i><i>.</i><i>.</i></span></h1>
+        <p class="byline">Created by <strong>Subhadeep Roy</strong> <span>(Subho-dip)</span></p>
+        <div class="model-status" role="status" aria-live="polite"><span class="status-light"></span><strong id="modelStatus">Connecting to the local NOVA server…</strong></div>
+        <div class="progress-track" aria-hidden="true"><span id="loadingProgress"></span></div>
+        <p class="sprite-message" id="spriteMessage">Tap one of NOVA’s little friends while the models wake up.</p>
+      </section>
+      <section class="sprite-playground" aria-label="Play with NOVA's sprites">
+        <button class="sprite-card" type="button" data-mood="happy" data-message="NOVA sends you a happy little wave, sir."><span class="sprite-face face-cyan"><i></i><i></i><b></b></span><span><strong>Wave hello</strong><small>Give NOVA a boost</small></span><span class="card-spark">✦</span></button>
+        <button class="sprite-card" type="button" data-mood="curious" data-message="NOVA is curious and ready to learn something new."><span class="sprite-face face-lilac"><i></i><i></i><b></b></span><span><strong>Curiosity</strong><small>Wake the bright eyes</small></span><span class="card-spark">✧</span></button>
+        <button class="sprite-card" type="button" data-mood="thinking" data-message="Tiny helper bots are checking the local models."><span class="sprite-face face-peach"><i></i><i></i><b></b></span><span><strong>Helper bots</strong><small>Send a tiny team</small></span><span class="card-spark">✦</span></button>
+      </section>
+      <a class="open-anyway hidden" id="openAnyway" href="/">Open NOVA anyway</a>
+      <footer>Everything runs locally on this computer <span>•</span> Please keep this tab open</footer>
+      <div class="particle-layer" id="particleLayer" aria-hidden="true"></div>
+    </main>
+  </body>
+</html>

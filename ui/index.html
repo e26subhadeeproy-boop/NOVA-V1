@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#090a10">
+    <title>NOVA — Your local AI</title>
+    <link rel="stylesheet" href="/app.css">
+    <script src="/avatar-renderer.js" defer></script>
+    <script src="/avatar-controller.js" defer></script>
+    <script src="/voice-sync.js" defer></script>
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand-row">
+          <a class="brand" href="/" aria-label="NOVA home">
+            <span class="brand-mark"><span></span></span>
+            <span>NOVA</span>
+          </a>
+          <button class="icon-button mobile-close" id="closeSidebar" aria-label="Close sidebar">×</button>
+        </div>
+
+        <button class="new-chat-button" id="newChatButton">
+          <span class="plus-icon">+</span> New conversation
+          <span class="shortcut">Ctrl K</span>
+        </button>
+
+        <label class="search-box">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 4.5 4.5"></path></svg>
+          <input id="chatSearch" type="search" placeholder="Search conversations" autocomplete="off">
+          <span class="search-key">/</span>
+        </label>
+
+        <div class="section-label"><span>Your space</span><span class="section-dots">···</span></div>
+        <nav class="conversation-list" id="conversationList" aria-label="Conversations"></nav>
+        <div class="sidebar-empty hidden" id="sidebarEmpty">No conversations yet</div>
+
+        <div class="sidebar-spacer"></div>
+        <div class="model-card">
+          <span class="status-dot" id="modelDot"></span>
+          <div class="model-card-copy">
+            <strong id="modelName">Loading local model</strong>
+            <span id="modelSubtext">Starting up…</span>
+          </div>
+          <button class="icon-button small-icon" id="openSettings" aria-label="Model settings" title="Model settings">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"></path><path d="m19.4 15 .1.1a1.8 1.8 0 0 1-2.5 2.5l-.1-.1a1.8 1.8 0 0 0-3 .9v.2a1.8 1.8 0 0 1-3.6 0v-.2a1.8 1.8 0 0 0-3-.9l-.1.1a1.8 1.8 0 0 1-2.5-2.5l.1-.1a1.8 1.8 0 0 0-.9-3h-.2a1.8 1.8 0 0 1 0-3.6h.2a1.8 1.8 0 0 0 .9-3l-.1-.1a1.8 1.8 0 0 1 2.5-2.5l.1.1a1.8 1.8 0 0 0 3-.9v-.2a1.8 1.8 0 0 1 3.6 0v.2a1.8 1.8 0 0 0 3 .9l.1-.1a1.8 1.8 0 0 1 2.5 2.5l-.1.1a1.8 1.8 0 0 0 .9 3h.2a1.8 1.8 0 0 1 0 3.6h-.2a1.8 1.8 0 0 0-.9 3Z"></path></svg>
+          </button>
+        </div>
+        <section class="system-card" aria-label="Live system status">
+          <div class="system-card-heading"><span>SYSTEM TELEMETRY</span><span class="telemetry-live"><i></i> LIVE</span></div>
+          <div class="system-metrics">
+            <div><span>CPU</span><strong id="cpuMetric">—</strong></div>
+            <div><span>RAM</span><strong id="ramMetric">—</strong></div>
+            <div><span>GPU</span><strong id="gpuMetric">—</strong></div>
+            <div><span>NOVA</span><strong id="processRamMetric">—</strong></div>
+          </div>
+          <p class="system-warning hidden" id="systemWarning" role="status"></p>
+        </section>
+        <button class="profile-row" id="openMemory">
+          <span class="profile-avatar">N</span>
+          <span class="profile-copy"><strong>Personal space</strong><span>Memory & preferences</span></span>
+          <span class="profile-arrow">↗</span>
+        </button>
+      </aside>
+
+      <main class="main-panel" id="mainPanel" data-mode="text">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="icon-button menu-button" id="openSidebar" aria-label="Open sidebar">☰</button>
+            <div class="breadcrumbs"><span>Workspace</span><span class="crumb-slash">/</span><strong id="activeTitle">New conversation</strong></div>
+          </div>
+          <div class="topbar-actions">
+            <label class="profile-control" title="Choose a response speed profile">
+              <span class="profile-spark">✳</span>
+              <select id="speedProfile" aria-label="Response speed profile">
+                <option value="fast">Fast</option>
+                <option value="balanced">Medium</option>
+                <option value="deep">Deep</option>
+              </select>
+              <span class="profile-chevron">⌄</span>
+            </label>
+            <button class="icon-button export-button" id="exportChat" title="Export conversation as Markdown" aria-label="Export conversation" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"></path><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"></path></svg>
+            </button>
+            <button class="icon-button" id="openActivity" type="button" title="Automation activity" aria-label="Automation activity">◷</button>
+            <div class="local-pill"><span class="status-dot"></span><span id="privacyPill">LOCAL ONLY</span></div>
+            <span class="network-status" id="networkStatus" role="status">Checking connection</span>
+            <button class="icon-button theme-button" id="themeButton" title="Toggle theme" aria-label="Toggle theme">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path></svg>
+            </button>
+            <button class="top-settings" id="topSettings"><span class="settings-glyph">⚙</span><span>Settings</span></button>
+          </div>
+        </header>
+
+        <section class="chat-stage" id="chatStage">
+          <section class="welcome-screen" id="welcomeScreen">
+            <div class="welcome-orbit" aria-hidden="true">
+              <span class="orbit orbit-one"></span><span class="orbit orbit-two"></span>
+              <span class="core-glow"><span class="core-star">✳</span></span>
+              <span class="orbit-node"></span>
+            </div>
+            <div class="eyebrow"><span class="eyebrow-line"></span> YOUR INTELLIGENCE, REIMAGINED <span class="eyebrow-line"></span></div>
+            <h1>Good to see you, sir.<br><span>What’s on your mind?</span></h1>
+            <p class="welcome-description">A thoughtful assistant, running right here on your machine.<br>Private by design. Ready when you are.</p>
+            <div class="suggestion-grid">
+              <button class="suggestion-card" data-prompt="Help me brainstorm a creative project">
+                <span class="suggestion-icon icon-violet">✳</span><span><strong>Think something through</strong><small>Explore an idea, big or small</small></span><span class="suggestion-arrow">↗</span>
+              </button>
+              <button class="suggestion-card" data-prompt="Explain a complex topic in simple terms">
+                <span class="suggestion-icon icon-blue">◈</span><span><strong>Learn something new</strong><small>Make the complicated click</small></span><span class="suggestion-arrow">↗</span>
+              </button>
+              <button class="suggestion-card" data-prompt="Help me write a clear and polished message">
+                <span class="suggestion-icon icon-amber">⌁</span><span><strong>Find the right words</strong><small>Write, rewrite, or refine</small></span><span class="suggestion-arrow">↗</span>
+              </button>
+              <button class="suggestion-card" data-prompt="Review this code and suggest improvements">
+                <span class="suggestion-icon icon-green">{ }</span><span><strong>Build something useful</strong><small>Code, debug, and create</small></span><span class="suggestion-arrow">↗</span>
+              </button>
+            </div>
+          </section>
+          <div class="message-list hidden" id="messageList" aria-live="polite"></div>
+        </section>
+
+        <section class="avatar-dock" id="avatarDock" data-state="idle" aria-label="NOVA companion">
+          <div class="avatar-art-frame" id="avatarArt" role="img" aria-label="NOVA, a friendly little robot">
+            <div class="avatar-art"></div>
+            <span class="avatar-spark spark-one" aria-hidden="true"></span>
+            <span class="avatar-spark spark-two" aria-hidden="true"></span>
+            <span class="avatar-sprite sprite-listening" aria-hidden="true">♪</span>
+            <span class="avatar-sprite sprite-thinking" aria-hidden="true">···</span>
+            <span class="avatar-sprite sprite-speaking" aria-hidden="true">♫</span>
+          </div>
+          <div class="avatar-dock-copy" title="Drag here to move NOVA in minimized Voice mode">
+            <span class="avatar-name">NOVA</span>
+            <span class="avatar-status" id="avatarStatus" aria-live="polite">Here with you</span>
+            <div class="avatar-waveform" id="avatarWaveform" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="avatar-dock-actions">
+            <button class="avatar-control avatar-push-to-talk" id="avatarMic" type="button" aria-label="Tap to talk to NOVA" aria-pressed="false" title="Tap to speak">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3m-4 0h8"></path></svg>
+            </button>
+            <button class="avatar-control" id="avatarSpeak" type="button" aria-label="Play the latest NOVA reply" title="Play the latest reply">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"></path><path d="M16 9a5 5 0 0 1 0 6m2-9a9 9 0 0 1 0 12"></path></svg>
+            </button>
+            <button class="avatar-control" id="avatarMinimize" type="button" aria-label="Minimize Voice mode" title="Minimize Voice mode">−</button>
+            <button class="avatar-control" id="avatarFull" type="button" aria-label="Show full Voice mode" title="Show full Voice mode">⛶</button>
+            <button class="avatar-control" id="avatarExit" type="button" aria-label="Exit Voice mode" title="Exit Voice mode">×</button>
+          </div>
+        </section>
+        <div class="voice-status-bar" id="voiceStatusBar" data-state="idle" role="status" aria-live="polite">
+          <span class="voice-status-indicator"></span><strong id="voiceStatusLabel">Ready</strong><span class="voice-status-detail" id="voiceStatusDetail">Say “Hey NOVA” or tap the mic</span>
+        </div>
+
+        <div class="composer-wrap">
+          <div class="error-banner hidden" id="errorBanner" role="alert"></div>
+          <div class="mode-switch" role="group" aria-label="Choose conversation mode">
+            <button class="mode-tab active" type="button" data-mode-choice="text" aria-pressed="true">Text</button>
+            <button class="mode-tab" type="button" data-mode-choice="voice" aria-pressed="false">Voice</button>
+          </div>
+          <form class="composer" id="composerForm">
+            <div class="voice-mode-hint" id="voiceModeHint">Say “Hey NOVA” or tap the microphone to start and stop</div>
+            <textarea id="messageInput" rows="1" placeholder="Message NOVA…" aria-label="Message NOVA"></textarea>
+            <div class="composer-bottom">
+              <div class="composer-tools">
+                <button class="composer-tool" id="memoryHint" type="button" title="Memory can be managed in your personal space"><span class="tiny-spark">✳</span> Memory on</button>
+                <span class="composer-divider"></span>
+                <span class="composer-local"><span class="tiny-lock">◈</span> Runs locally</span>
+              </div>
+              <div class="composer-actions">
+                <span class="enter-hint">↵ to send</span>
+                <button class="send-button" id="sendButton" type="submit" aria-label="Send message">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-7 7 7-7 7 7"></path></svg>
+                </button>
+              </div>
+            </div>
+          </form>
+          <div class="disclaimer">NOVA can make mistakes. Check important information.</div>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal-backdrop hidden" id="settingsModal">
+      <section class="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="modal-heading"><div><span class="modal-kicker">PERSONALIZE</span><h2 id="settingsTitle">Model settings</h2></div><button class="icon-button modal-close" data-close="settingsModal" aria-label="Close settings">×</button></div>
+        <div class="settings-model-card"><span class="settings-model-icon">✳</span><div><strong>Qwen3 0.6B + Qwen2.5 Coder 0.5B</strong><small id="settingsModelStatus">Checking local models…</small></div><span class="local-tag">LOCAL</span></div>
+        <p class="modal-note">Qwen3 0.6B handles general replies. Qwen2.5 Coder 0.5B is loaded for coding requests only. Both model files are stored locally.</p>
+        <label class="profile-setting"><span><strong>AI provider</strong><small>Auto uses Gemini online when configured; it falls back to local Qwen when Gemini cannot connect.</small></span><select id="aiProviderSetting"><option value="auto">Auto · Gemini online, local offline</option><option value="local">Local Qwen only</option></select></label>
+        <section class="gemini-key-card" aria-label="Gemini API key settings">
+          <div><strong>Gemini API key</strong><small id="geminiKeyStatus">Checking key status…</small></div>
+          <label class="sr-only" for="geminiApiKey">Gemini API key</label>
+          <input id="geminiApiKey" type="password" autocomplete="new-password" placeholder="Paste key to save on this device">
+          <div class="gemini-key-actions"><button class="secondary-button" id="clearGeminiKey" type="button">Remove saved key</button><button class="secondary-button" id="saveGeminiKey" type="button">Save key</button></div>
+          <p class="key-privacy-note">Gemini receives your prompts and the recent chat context when Auto is selected. Keys stay on NOVA’s local server and are never sent to the browser or included in Git files. Offline replies use local Qwen.</p>
+        </section>
+        <label class="profile-setting"><span><strong>Response profile</strong><small>Trade response time for more context and longer answers.</small></span><select id="settingsProfile"><option value="fast">Fast · 32 tokens · 4 messages</option><option value="balanced">Medium · 96 tokens · 8 messages</option><option value="deep">Deep · 192 tokens · 16 messages</option></select></label>
+        <label class="setting-row"><span><strong>Temperature</strong><small>Lower is focused; higher is more creative.</small></span><span class="range-value" id="temperatureValue">0.7</span><input id="temperatureSetting" type="range" min="0" max="2" step="0.1"></label>
+        <label class="setting-row"><span><strong>Top-p</strong><small>Adjust the variety of generated text.</small></span><span class="range-value" id="topPValue">0.9</span><input id="topPSetting" type="range" min="0.05" max="1" step="0.05"></label>
+        <label class="setting-row"><span><strong>Response length</strong><small>Maximum number of generated tokens.</small></span><span class="range-value" id="tokenValue">256</span><input id="tokenSetting" type="range" min="16" max="1024" step="16"></label>
+        <label class="toggle-row"><span><strong>Use saved memories</strong><small>Include relevant approved memories in replies.</small></span><input id="memorySetting" type="checkbox"><span class="toggle-control"></span></label>
+        <label class="toggle-row"><span><strong>Animate NOVA avatar</strong><small>Allow expressive eye, antenna, and idle motion.</small></span><input id="avatarAnimationSetting" type="checkbox"><span class="toggle-control"></span></label>
+        <label class="toggle-row"><span><strong>“Hey NOVA” wake phrase</strong><small>In Voice mode, keep the microphone listening for the wake phrase.</small></span><input id="wakePhraseSetting" type="checkbox"><span class="toggle-control"></span></label>
+        <div class="modal-footer"><span id="settingsMessage"></span><button class="primary-button" id="saveSettings">Save preferences</button></div>
+      </section>
+    </div>
+
+    <div class="modal-backdrop hidden" id="activityModal">
+      <section class="modal activity-modal" role="dialog" aria-modal="true" aria-labelledby="activityTitle">
+        <div class="modal-heading"><div><span class="modal-kicker">AUTOMATIONS</span><h2 id="activityTitle">Greetings & activity</h2></div><button class="icon-button modal-close" data-close="activityModal" aria-label="Close activity">×</button></div>
+        <p class="modal-note">Show a time-aware greeting when NOVA opens on desktop or mobile. Greeting events appear in this local activity log.</p>
+        <label class="toggle-row"><span><strong>Desktop greeting</strong><small>Greet when NOVA opens in a desktop browser.</small></span><input id="desktopGreeting" type="checkbox"><span class="toggle-control"></span></label>
+        <label class="toggle-row"><span><strong>Mobile greeting</strong><small>Greet when NOVA opens on a phone or tablet.</small></span><input id="mobileGreeting" type="checkbox"><span class="toggle-control"></span></label>
+        <label class="toggle-row"><span><strong>Speak greetings and replies</strong><small>Use your browser’s speech synthesis voice.</small></span><input id="speakGreeting" type="checkbox"><span class="toggle-control"></span></label>
+        <div class="modal-footer"><span id="automationMessage"></span><button class="primary-button" id="saveAutomations" type="button">Save automations</button></div>
+        <div class="activity-list" id="activityList" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <div class="modal-backdrop hidden" id="memoryModal">
+      <section class="modal memory-modal" role="dialog" aria-modal="true" aria-labelledby="memoryTitle">
+        <div class="modal-heading"><div><span class="modal-kicker">YOUR PERSONAL SPACE</span><h2 id="memoryTitle">Saved memories</h2></div><button class="icon-button modal-close" data-close="memoryModal" aria-label="Close memories">×</button></div>
+        <p class="modal-note">NOVA only uses these details when memory is enabled. Review or remove them anytime.</p>
+        <form class="memory-add" id="memoryForm"><input id="memoryInput" type="text" maxlength="1000" placeholder="Add something for NOVA to remember…" aria-label="New memory"><button class="primary-button" type="submit">Add memory</button></form>
+        <div class="memory-list" id="memoryList"></div>
+        <div class="modal-footer"><span id="memoryMessage"></span><button class="text-button danger-text" id="clearMemories">Forget all</button></div>
+      </section>
+    </div>
+
+    <div class="toast hidden" id="toast" role="status"></div>
+  </body>
+</html>

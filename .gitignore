@@ -1,0 +1,44 @@
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local model weights and generated training outputs
+/models/
+/output/
+/checkpoints/
+/autodata/
+
+# Private runtime data and machine-specific settings
+/memory/*.db
+/memory/*.db-*
+/logs/*
+!/logs/.gitkeep
+/config/secrets.json
+/config/.gemini_setup_prompted
+/config/ui_settings.json
+/config/automations.json
+.env
+.env.*
+!.env.example
+
+# Local packaging/build files
+/build/
+/dist/
+/release/
+/android/.gradle/
+/android/app/build/
+/android/local.properties
+/android/.kotlin/
+/android/.cxx/
+/structure.txt
+/full_structure.txt
+/nova_structure.txt
+*.log
+Thumbs.db
+Desktop.ini
