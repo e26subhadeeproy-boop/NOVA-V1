@@ -141,3 +141,6 @@ git push -u origin main
 ```
 
 Before pushing, confirm that the staged changes do not include model weights, API keys, `.env` files, local databases, or personal settings. The `.gitignore` excludes those machine-specific files and generated EXE/APK artifacts. Choose and add a `LICENSE` before describing the repository as open source; no license is included because the project owner has not selected redistribution terms.
+
+
+**Please check the issue section and tell all the bugs**
